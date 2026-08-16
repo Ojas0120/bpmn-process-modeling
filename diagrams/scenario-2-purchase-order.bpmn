@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_2"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_PurchaseOrder" isExecutable="false">
+    <bpmn:startEvent id="Start_2" name="Order Placed">
+      <bpmn:outgoing>sf1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_CheckStock" name="Check Product Availability">
+      <bpmn:incoming>sf1</bpmn:incoming>
+      <bpmn:outgoing>sf2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="XOR_Stock" name="Product Available?">
+      <bpmn:incoming>sf2</bpmn:incoming>
+      <bpmn:outgoing>sf3</bpmn:outgoing>
+      <bpmn:outgoing>sf5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_OOS" name="Notify Customer (Out of Stock)">
+      <bpmn:incoming>sf3</bpmn:incoming>
+      <bpmn:outgoing>sf4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_OOS" name="Order Terminated">
+      <bpmn:incoming>sf4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_Payment" name="Process Payment">
+      <bpmn:incoming>sf5</bpmn:incoming>
+      <bpmn:outgoing>sf6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="XOR_Payment" name="Payment Successful?">
+      <bpmn:incoming>sf6</bpmn:incoming>
+      <bpmn:outgoing>sf7</bpmn:outgoing>
+      <bpmn:outgoing>sf9</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_PayFail" name="Notify Customer (Payment Failed)">
+      <bpmn:incoming>sf7</bpmn:incoming>
+      <bpmn:outgoing>sf8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_PayFail" name="Order Cancelled">
+      <bpmn:incoming>sf8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_Confirm" name="Confirm Order">
+      <bpmn:incoming>sf9</bpmn:incoming>
+      <bpmn:outgoing>sf10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Prep" name="Prepare Product for Shipment">
+      <bpmn:incoming>sf10</bpmn:incoming>
+      <bpmn:outgoing>sf11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Ship" name="Ship Order">
+      <bpmn:incoming>sf11</bpmn:incoming>
+      <bpmn:outgoing>sf12</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ShipConf" name="Send Shipping Confirmation">
+      <bpmn:incoming>sf12</bpmn:incoming>
+      <bpmn:outgoing>sf13</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_OrderComplete" name="Order Fulfilled">
+      <bpmn:incoming>sf13</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="sf1" sourceRef="Start_2" targetRef="Task_CheckStock" />
+    <bpmn:sequenceFlow id="sf2" sourceRef="Task_CheckStock" targetRef="XOR_Stock" />
+    <bpmn:sequenceFlow id="sf3" name="No" sourceRef="XOR_Stock" targetRef="Task_OOS" />
+    <bpmn:sequenceFlow id="sf4" sourceRef="Task_OOS" targetRef="End_OOS" />
+    <bpmn:sequenceFlow id="sf5" name="Yes" sourceRef="XOR_Stock" targetRef="Task_Payment" />
+    <bpmn:sequenceFlow id="sf6" sourceRef="Task_Payment" targetRef="XOR_Payment" />
+    <bpmn:sequenceFlow id="sf7" name="No" sourceRef="XOR_Payment" targetRef="Task_PayFail" />
+    <bpmn:sequenceFlow id="sf8" sourceRef="Task_PayFail" targetRef="End_PayFail" />
+    <bpmn:sequenceFlow id="sf9" name="Yes" sourceRef="XOR_Payment" targetRef="Task_Confirm" />
+    <bpmn:sequenceFlow id="sf10" sourceRef="Task_Confirm" targetRef="Task_Prep" />
+    <bpmn:sequenceFlow id="sf11" sourceRef="Task_Prep" targetRef="Task_Ship" />
+    <bpmn:sequenceFlow id="sf12" sourceRef="Task_Ship" targetRef="Task_ShipConf" />
+    <bpmn:sequenceFlow id="sf13" sourceRef="Task_ShipConf" targetRef="End_OrderComplete" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_2">
+    <bpmndi:BPMNPlane id="BPMNPlane_2" bpmnElement="Process_PurchaseOrder">
+      <bpmndi:BPMNShape id="Start_2_di" bpmnElement="Start_2">
+        <dc:Bounds x="160" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckStock_di" bpmnElement="Task_CheckStock">
+        <dc:Bounds x="250" y="80" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="XOR_Stock_di" bpmnElement="XOR_Stock" isMarkerVisible="true">
+        <dc:Bounds x="415" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OOS_di" bpmnElement="Task_OOS">
+        <dc:Bounds x="520" y="200" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_OOS_di" bpmnElement="End_OOS">
+        <dc:Bounds x="692" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Payment_di" bpmnElement="Task_Payment">
+        <dc:Bounds x="520" y="80" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="XOR_Payment_di" bpmnElement="XOR_Payment" isMarkerVisible="true">
+        <dc:Bounds x="685" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PayFail_di" bpmnElement="Task_PayFail">
+        <dc:Bounds x="790" y="200" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PayFail_di" bpmnElement="End_PayFail">
+        <dc:Bounds x="962" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Confirm_di" bpmnElement="Task_Confirm">
+        <dc:Bounds x="790" y="80" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Prep_di" bpmnElement="Task_Prep">
+        <dc:Bounds x="950" y="80" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Ship_di" bpmnElement="Task_Ship">
+        <dc:Bounds x="1110" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShipConf_di" bpmnElement="Task_ShipConf">
+        <dc:Bounds x="1260" y="80" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_OrderComplete_di" bpmnElement="End_OrderComplete">
+        <dc:Bounds x="1432" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="sf1_di" bpmnElement="sf1">
+        <di:waypoint x="196" y="120" />
+        <di:waypoint x="250" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf2_di" bpmnElement="sf2">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="415" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf3_di" bpmnElement="sf3">
+        <di:waypoint x="440" y="145" />
+        <di:waypoint x="440" y="240" />
+        <di:waypoint x="520" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf4_di" bpmnElement="sf4">
+        <di:waypoint x="630" y="240" />
+        <di:waypoint x="692" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf5_di" bpmnElement="sf5">
+        <di:waypoint x="465" y="120" />
+        <di:waypoint x="520" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf6_di" bpmnElement="sf6">
+        <di:waypoint x="630" y="120" />
+        <di:waypoint x="685" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf7_di" bpmnElement="sf7">
+        <di:waypoint x="710" y="145" />
+        <di:waypoint x="710" y="240" />
+        <di:waypoint x="790" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf8_di" bpmnElement="sf8">
+        <di:waypoint x="900" y="240" />
+        <di:waypoint x="962" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf9_di" bpmnElement="sf9">
+        <di:waypoint x="735" y="120" />
+        <di:waypoint x="790" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf10_di" bpmnElement="sf10">
+        <di:waypoint x="900" y="120" />
+        <di:waypoint x="950" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf11_di" bpmnElement="sf11">
+        <di:waypoint x="1060" y="120" />
+        <di:waypoint x="1110" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf12_di" bpmnElement="sf12">
+        <di:waypoint x="1210" y="120" />
+        <di:waypoint x="1260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="sf13_di" bpmnElement="sf13">
+        <di:waypoint x="1370" y="120" />
+        <di:waypoint x="1432" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

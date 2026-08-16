@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_3"
+                  targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_ITService" isExecutable="false">
+    <bpmn:startEvent id="Start_3" name="IT Problem Reported">
+      <bpmn:outgoing>s1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_Reg" name="Register IT Support Request">
+      <bpmn:incoming>s1</bpmn:incoming>
+      <bpmn:outgoing>s2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Sev" name="Check Problem Severity">
+      <bpmn:incoming>s2</bpmn:incoming>
+      <bpmn:outgoing>s3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="XOR_Sev" name="Severity Level?">
+      <bpmn:incoming>s3</bpmn:incoming>
+      <bpmn:outgoing>s4</bpmn:outgoing>
+      <bpmn:outgoing>s5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_SuppTech" name="Assign to Support Technician">
+      <bpmn:incoming>s4</bpmn:incoming>
+      <bpmn:outgoing>s6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SrTech" name="Assign to Senior Technician">
+      <bpmn:incoming>s5</bpmn:incoming>
+      <bpmn:outgoing>s7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="XOR_Merge1">
+      <bpmn:incoming>s6</bpmn:incoming>
+      <bpmn:incoming>s7</bpmn:incoming>
+      <bpmn:outgoing>s8</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Investigate" name="Investigate Problem">
+      <bpmn:incoming>s8</bpmn:incoming>
+      <bpmn:outgoing>s9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="XOR_Res" name="Resolved Internally?">
+      <bpmn:incoming>s9</bpmn:incoming>
+      <bpmn:outgoing>s10</bpmn:outgoing>
+      <bpmn:outgoing>s11</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Fix" name="Fix Problem">
+      <bpmn:incoming>s10</bpmn:incoming>
+      <bpmn:outgoing>s12</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Escalate" name="Escalate to External Service Provider">
+      <bpmn:incoming>s11</bpmn:incoming>
+      <bpmn:outgoing>s13</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="XOR_Merge2">
+      <bpmn:incoming>s12</bpmn:incoming>
+      <bpmn:incoming>s13</bpmn:incoming>
+      <bpmn:outgoing>s14</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Status" name="Update Request Status">
+      <bpmn:incoming>s14</bpmn:incoming>
+      <bpmn:outgoing>s15</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_NotifyEmp" name="Send Resolution Notification">
+      <bpmn:incoming>s15</bpmn:incoming>
+      <bpmn:outgoing>s16</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_IT" name="Request Closed">
+      <bpmn:incoming>s16</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="s1" sourceRef="Start_3" targetRef="Task_Reg" />
+    <bpmn:sequenceFlow id="s2" sourceRef="Task_Reg" targetRef="Task_Sev" />
+    <bpmn:sequenceFlow id="s3" sourceRef="Task_Sev" targetRef="XOR_Sev" />
+    <bpmn:sequenceFlow id="s4" name="Low" sourceRef="XOR_Sev" targetRef="Task_SuppTech" />
+    <bpmn:sequenceFlow id="s5" name="High" sourceRef="XOR_Sev" targetRef="Task_SrTech" />
+    <bpmn:sequenceFlow id="s6" sourceRef="Task_SuppTech" targetRef="XOR_Merge1" />
+    <bpmn:sequenceFlow id="s7" sourceRef="Task_SrTech" targetRef="XOR_Merge1" />
+    <bpmn:sequenceFlow id="s8" sourceRef="XOR_Merge1" targetRef="Task_Investigate" />
+    <bpmn:sequenceFlow id="s9" sourceRef="Task_Investigate" targetRef="XOR_Res" />
+    <bpmn:sequenceFlow id="s10" name="Yes" sourceRef="XOR_Res" targetRef="Task_Fix" />
+    <bpmn:sequenceFlow id="s11" name="No" sourceRef="XOR_Res" targetRef="Task_Escalate" />
+    <bpmn:sequenceFlow id="s12" sourceRef="Task_Fix" targetRef="XOR_Merge2" />
+    <bpmn:sequenceFlow id="s13" sourceRef="Task_Escalate" targetRef="XOR_Merge2" />
+    <bpmn:sequenceFlow id="s14" sourceRef="XOR_Merge2" targetRef="Task_Status" />
+    <bpmn:sequenceFlow id="s15" sourceRef="Task_Status" targetRef="Task_NotifyEmp" />
+    <bpmn:sequenceFlow id="s16" sourceRef="Task_NotifyEmp" targetRef="End_IT" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_3">
+    <bpmndi:BPMNPlane id="BPMNPlane_3" bpmnElement="Process_ITService">
+      <bpmndi:BPMNShape id="Start_3_di" bpmnElement="Start_3">
+        <dc:Bounds x="152" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Reg_di" bpmnElement="Task_Reg">
+        <dc:Bounds x="230" y="110" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Sev_di" bpmnElement="Task_Sev">
+        <dc:Bounds x="380" y="110" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="XOR_Sev_di" bpmnElement="XOR_Sev" isMarkerVisible="true">
+        <dc:Bounds x="535" y="125" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SuppTech_di" bpmnElement="Task_SuppTech">
+        <dc:Bounds x="630" y="40" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SrTech_di" bpmnElement="Task_SrTech">
+        <dc:Bounds x="630" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="XOR_Merge1_di" bpmnElement="XOR_Merge1" isMarkerVisible="true">
+        <dc:Bounds x="795" y="125" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Investigate_di" bpmnElement="Task_Investigate">
+        <dc:Bounds x="890" y="110" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="XOR_Res_di" bpmnElement="XOR_Res" isMarkerVisible="true">
+        <dc:Bounds x="1045" y="125" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Fix_di" bpmnElement="Task_Fix">
+        <dc:Bounds x="1140" y="40" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Escalate_di" bpmnElement="Task_Escalate">
+        <dc:Bounds x="1140" y="180" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="XOR_Merge2_di" bpmnElement="XOR_Merge2" isMarkerVisible="true">
+        <dc:Bounds x="1305" y="125" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Status_di" bpmnElement="Task_Status">
+        <dc:Bounds x="1400" y="110" width="110" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotifyEmp_di" bpmnElement="Task_NotifyEmp">
+        <dc:Bounds x="1550" y="110" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_IT_di" bpmnElement="End_IT">
+        <dc:Bounds x="1712" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="s1_di" bpmnElement="s1">
+        <di:waypoint x="188" y="150" />
+        <di:waypoint x="230" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s2_di" bpmnElement="s2">
+        <di:waypoint x="340" y="150" />
+        <di:waypoint x="380" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s3_di" bpmnElement="s3">
+        <di:waypoint x="490" y="150" />
+        <di:waypoint x="535" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s4_di" bpmnElement="s4">
+        <di:waypoint x="560" y="125" />
+        <di:waypoint x="560" y="80" />
+        <di:waypoint x="630" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s5_di" bpmnElement="s5">
+        <di:waypoint x="560" y="175" />
+        <di:waypoint x="560" y="220" />
+        <di:waypoint x="630" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s6_di" bpmnElement="s6">
+        <di:waypoint x="750" y="80" />
+        <di:waypoint x="820" y="80" />
+        <di:waypoint x="820" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s7_di" bpmnElement="s7">
+        <di:waypoint x="750" y="220" />
+        <di:waypoint x="820" y="220" />
+        <di:waypoint x="820" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s8_di" bpmnElement="s8">
+        <di:waypoint x="845" y="150" />
+        <di:waypoint x="890" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s9_di" bpmnElement="s9">
+        <di:waypoint x="1000" y="150" />
+        <di:waypoint x="1045" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s10_di" bpmnElement="s10">
+        <di:waypoint x="1070" y="125" />
+        <di:waypoint x="1070" y="80" />
+        <di:waypoint x="1140" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s11_di" bpmnElement="s11">
+        <di:waypoint x="1070" y="175" />
+        <di:waypoint x="1070" y="220" />
+        <di:waypoint x="1140" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s12_di" bpmnElement="s12">
+        <di:waypoint x="1250" y="80" />
+        <di:waypoint x="1330" y="80" />
+        <di:waypoint x="1330" y="125" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s13_di" bpmnElement="s13">
+        <di:waypoint x="1260" y="220" />
+        <di:waypoint x="1330" y="220" />
+        <di:waypoint x="1330" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s14_di" bpmnElement="s14">
+        <di:waypoint x="1355" y="150" />
+        <di:waypoint x="1400" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s15_di" bpmnElement="s15">
+        <di:waypoint x="1510" y="150" />
+        <di:waypoint x="1550" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="s16_di" bpmnElement="s16">
+        <di:waypoint x="1670" y="150" />
+        <di:waypoint x="1712" y="150" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
